@@ -1,0 +1,80 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  OMP_NUM_THREADS: "2"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: uv run ruff check src tests
+      - run: uv run ruff format --check src tests
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: uv run pytest -q
+
+  benchmark-gate:
+    # The quick profile runs the whole benchmark on the smaller world; bounds live in benchmarks/thresholds.json.
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: uv run python -m fraudnet.bench --quick --check
+      - run: uv run python -m fraudnet.bench --check-only
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark-quick
+          path: |
+            benchmarks/ci-results.json
+            benchmarks/ci-results.md
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t fraudnet:ci .
+      - run: |
+          docker run -d --name fraudnet -p 8772:8772 fraudnet:ci
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8772/health; then
+              curl -fsS -X POST http://localhost:8772/v1/score -H 'content-type: application/json' \
+                -d '{"account_id": 12, "device_id": 12, "merchant_id": 3, "amount": 49.9, "channel": "ecom"}'
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs fraudnet
+          exit 1

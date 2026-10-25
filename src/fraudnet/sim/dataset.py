@@ -1,7 +1,8 @@
 """The simulated dataset: the transaction log, reference tables, a checksum and an on-disk cache.
 
-The cache key is a hash of the full config, so changing any simulator knob produces a new file instead of
-silently reusing an old world, and the stored SHA-256 of every column is re-checked on load.
+The cache key is a hash of the full config and a simulator version, so changing any knob (or the generator
+code, with a version bump) produces a new file instead of silently reusing an old world, and the stored
+SHA-256 of every column is re-checked on load.
 """
 
 from __future__ import annotations
@@ -113,9 +114,14 @@ class Dataset:
         return dataset
 
 
+# Bump whenever a generator changes what a given config produces, so stale cached worlds are not reused.
+SIMULATOR_VERSION = 2
+
+
 def config_key(cfg: SimConfig) -> str:
-    """Short stable hash of a config, used in cache file names."""
-    return hashlib.sha256(json.dumps(cfg.to_dict(), sort_keys=True).encode()).hexdigest()[:10]
+    """Short stable hash of the config and the simulator version, used in cache file names."""
+    payload = json.dumps({"version": SIMULATOR_VERSION, **cfg.to_dict()}, sort_keys=True)
+    return hashlib.sha256(payload.encode()).hexdigest()[:10]
 
 
 def cache_path(cfg: SimConfig, data_dir: Path) -> Path:

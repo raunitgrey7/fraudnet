@@ -268,7 +268,8 @@ class FraudInjector:
             if herder
             else world.device_at(mule, ts)
         )
-        report = reported + int(rng.uniform(0.5, 8.0) * DAY)
+        # The bank traces the chain after the victim's report, hop by hop: a hop is reported after both exist.
+        report = max(reported, ts) + int(rng.uniform(0.5, 8.0) * DAY)
         nxt = self._next_mule(mule, ts, used) if hops_left > 0 else None
         if nxt is None:
             if rng.random() < 0.5 and self.exit_accounts:

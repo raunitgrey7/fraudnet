@@ -1,0 +1,87 @@
+[project]
+name = "fraudnet"
+version = "0.1.0"
+description = "Graph machine learning for payment fraud: a seeded agent-based simulator, a point-in-time online feature store, rules, gradient boosting and a plain PyTorch GraphSAGE, and a scoring API with reason codes and an alert queue"
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+license = "MIT"
+authors = [{ name = "Raunit Kumar Thakur" }]
+dependencies = [
+    "fastapi>=0.162.0",
+    "numpy>=2.5.4",
+    "prometheus-client>=0.26.0",
+    "pydantic>=2.14.1",
+    "scikit-learn>=1.9.1",
+    "scipy>=1.18.1",
+    "threadpoolctl>=3.5.0",
+    "torch>=2.14.1",
+    "uvicorn>=0.54.0",
+]
+
+[project.scripts]
+fraudnet = "fraudnet.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.13.5,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "httpx2>=2.16.0",
+    "hypothesis>=6.170.9",
+    "pytest>=9.1.1",
+    "pytest-timeout>=2.3.1",
+    "ruff>=0.17.2",
+]
+
+[tool.uv]
+default-groups = ["dev"]
+
+# Linux (CI and Docker) must take CPU-only wheels; the default PyPI wheels pull CUDA libraries.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
+[tool.ruff]
+line-length = 110
+target-version = "py313"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "RUF", "ANN", "D", "PL", "C4", "PT", "RET", "ARG", "T20", "C90"]
+# N803 and N806: feature matrices are called X, as in scikit-learn. E501: the formatter owns line length.
+ignore = ["D203", "D213", "D105", "D107", "PLR0913", "PLR2004", "RUF012", "ANN401", "E501", "PLR0911", "N803", "N806"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D", "PLR2004", "ANN", "S101", "PLR0915", "PLC0415", "ARG001", "PT018"]
+"src/fraudnet/cli.py" = ["T201", "PLC0415"]
+"src/fraudnet/bench.py" = ["T201"]
+"src/fraudnet/tune.py" = ["T201"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 12
+
+[tool.ruff.lint.pylint]
+max-args = 8
+max-statements = 50
+max-branches = 14
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+timeout = 900
+markers = [
+  "slow: takes more than a few seconds",
+]
+filterwarnings = [
+  "error::DeprecationWarning:fraudnet.*",
+  "ignore:Sparse CSR tensor support is in beta:UserWarning",
+]

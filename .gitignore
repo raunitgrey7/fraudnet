@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+htmlcov/
+dist/
+build/
+
+# Simulated data and trained artifacts (rebuilt by make setup and make train)
+data/*
+!data/.gitkeep
+artifacts/*
+!artifacts/.gitkeep
+
+# CI benchmark output (the full benchmark results are committed)
+benchmarks/ci-results.*
+
+# Local tooling
+.env
+.DS_Store

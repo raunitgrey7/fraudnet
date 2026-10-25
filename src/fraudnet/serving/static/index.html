@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>fraudnet console</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="bar">
+    <div class="brand">fraudnet <span class="muted">payment fraud console</span></div>
+    <div class="stats" id="stats">loading</div>
+  </header>
+
+  <section class="controls">
+    <label>Model
+      <select id="model">
+        <option value="gbdt">gbdt</option>
+        <option value="graphsage">graphsage</option>
+        <option value="rules">rules</option>
+      </select>
+    </label>
+    <label>Transactions <input id="replay-n" type="number" min="1" max="5000" value="500"></label>
+    <button id="replay">Replay held-out stream</button>
+    <span id="replay-result" class="muted"></span>
+    <label class="key">API key <input id="api-key" type="password" placeholder="only if APP_API_KEY is set"></label>
+  </section>
+
+  <main class="grid">
+    <section class="panel">
+      <h2>Alert queue <span class="muted" id="queue-count"></span></h2>
+      <p class="muted small">Highest score first. A fraud verdict is fed back to the feature store as a report at the current clock.
+        The simulator column shows the planted ground truth for replayed transactions.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>score</th><th>decision</th><th>amount</th><th>account</th><th>reasons</th><th>simulator</th><th>verdict</th></tr></thead>
+          <tbody id="alerts"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Rings and linked accounts</h2>
+      <p class="muted small">Communities from the latest daily graph snapshot that share devices, ranked by their members' latest scores.</p>
+      <div id="rings" class="ring-list"></div>
+      <div class="lookup">
+        <label>Account network <input id="account-id" type="number" min="0" placeholder="account id"></label>
+        <button id="lookup">Show</button>
+      </div>
+      <svg id="graph" viewBox="0 0 560 380" role="img" aria-label="Network of accounts and devices"></svg>
+      <div class="legend small muted">
+        <span><svg width="12" height="12"><circle cx="6" cy="6" r="5" class="n-acct"/></svg> account, colour by score</span>
+        <span><svg width="12" height="12"><rect x="1" y="1" width="10" height="10" class="n-dev"/></svg> device</span>
+        <span><svg width="22" height="12"><line x1="1" y1="6" x2="21" y2="6" class="e-transfer"/></svg> transfer</span>
+        <span><svg width="12" height="12"><circle cx="6" cy="6" r="5" class="n-acct reported"/></svg> reported fraud</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Score a transaction</h2>
+      <form id="score-form" class="form">
+        <label>Account <input name="account_id" type="number" min="0" value="12" required></label>
+        <label>Device <input name="device_id" type="number" min="0" value="12" required></label>
+        <label>Merchant <input name="merchant_id" type="number" min="0" value="3"></label>
+        <label>Payee account <input name="payee_account_id" type="number" min="0"></label>
+        <label>Amount <input name="amount" type="number" min="0.01" step="0.01" value="49.90" required></label>
+        <label>Channel
+          <select name="channel"><option>ecom</option><option>pos</option><option>p2p</option></select>
+        </label>
+        <button type="submit">Score</button>
+      </form>
+      <pre id="score-out" class="out small"></pre>
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

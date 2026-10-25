@@ -20,7 +20,8 @@ from fraudnet.models.gnn import (
     snapshot_tensors,
 )
 from fraudnet.models.rules import RULES, RulesModel
-from fraudnet.pipeline import fit_gbdt
+from fraudnet.pipeline import fit_gbdt, prepare
+from fraudnet.sim import SimConfig
 from fraudnet.sim.config import TRANSFER_CATEGORY
 
 
@@ -127,6 +128,20 @@ def test_gnn_learns_and_is_deterministic(prepared):
     pa, pb = a.predict(prepared.table, test), b.predict(prepared.table, test)
     assert np.array_equal(pa, pb)
     assert _test_ap(prepared, pa) > 3 * _base_rate(prepared)
+
+
+@pytest.mark.slow
+def test_gnn_is_bit_identical_where_torch_runs_in_parallel():
+    """The quick world is large enough for torch's parallel kernels; the default config must still repeat."""
+    prep = prepare(SimConfig.quick(), None)
+    runs = [
+        GNNModel(GNNConfig(epochs=2, patience=2)).fit(
+            prep.table, prep.labels["train"], prep.masks["train"], prep.masks["val"]
+        )
+        for _ in range(2)
+    ]
+    test = prep.masks["test"]
+    assert np.array_equal(runs[0].predict(prep.table, test), runs[1].predict(prep.table, test))
 
 
 def test_gnn_online_scores_match_batch_scores(bundle, prepared):

@@ -61,7 +61,10 @@ class GNNConfig:
     patience: int = 6
     negative_rate: float = 0.3
     pos_weight: float = 5.0
-    threads: int = 2
+    # One thread: with two, sparse backward passes reduce in a varying order and predictions drift by up to
+    # 4e-7 after eight epochs on the full world (enough to move early stopping); one thread is bit-identical
+    # and was not slower (8.7 s against 8.2 s for eight epochs).
+    threads: int = 1
     seed: int = 0
 
 

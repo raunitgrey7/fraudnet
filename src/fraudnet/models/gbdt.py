@@ -27,7 +27,7 @@ class GBDTConfig:
     """Hyperparameters; learning rate and leaf count won the validation-only sweep in ``fraudnet.tune``."""
 
     learning_rate: float = 0.05
-    max_leaf_nodes: int = 31
+    max_leaf_nodes: int = 63
     min_samples_leaf: int = 40
     l2_regularization: float = 1.0
     max_iter: int = 400

@@ -1,0 +1,1534 @@
+{
+  "meta": {
+    "seed": 42,
+    "profile": "full",
+    "generated_at": "2026-10-25T05:49:58Z",
+    "commit": "ab23bad",
+    "version": "0.1.0",
+    "python": "3.13.17",
+    "torch": "2.14.1",
+    "scikit_learn": "1.9.1",
+    "numpy": "2.5.4",
+    "machine": "arm64",
+    "threads": 2,
+    "cost_model": {
+      "review_cost": 5.0,
+      "false_alert_cost": 10.0,
+      "chargeback_fee": 15.0
+    },
+    "seconds": {
+      "simulate": 0.03,
+      "replay": 19.86,
+      "train_bundle": 51.4,
+      "models": 35.6,
+      "ablation": 163.2,
+      "protocol": 53.3,
+      "leakage_cost": 25.7,
+      "point_in_time": 23.1,
+      "latency": 8.0,
+      "seeds": 103.5,
+      "total": 483.8
+    }
+  },
+  "dataset": {
+    "transactions": 441378,
+    "accounts": 5076,
+    "devices": 8039,
+    "merchants": 406,
+    "fraud_transactions": 2982,
+    "fraud_rate": 0.006756,
+    "fraud_amount_share": 0.027143,
+    "never_reported_share": 0.1398,
+    "label_delay_days": {
+      "p10": 1.86,
+      "p50": 9.99,
+      "p90": 41.88
+    },
+    "patterns": {
+      "fraud_ring": {
+        "transactions": 1024,
+        "attacks": 12,
+        "amount": 212031.87
+      },
+      "money_mule": {
+        "transactions": 710,
+        "attacks": 151,
+        "amount": 476397.64
+      },
+      "account_takeover": {
+        "transactions": 460,
+        "attacks": 110,
+        "amount": 167848.85
+      },
+      "card_testing": {
+        "transactions": 788,
+        "attacks": 24,
+        "amount": 39698.61
+      }
+    },
+    "split": {
+      "build_day": 70,
+      "gap_days": [
+        63,
+        70
+      ],
+      "train": {
+        "days": [
+          7,
+          49
+        ],
+        "transactions": 200586,
+        "fraud": 1347,
+        "fraud_rate": 0.006715,
+        "fraud_unlabelled_at_build": 0.3534
+      },
+      "val": {
+        "days": [
+          49,
+          63
+        ],
+        "transactions": 69456,
+        "fraud": 462,
+        "fraud_rate": 0.006652,
+        "fraud_unlabelled_at_build": 0.5476
+      },
+      "test": {
+        "days": [
+          70,
+          90
+        ],
+        "transactions": 104125,
+        "fraud": 786,
+        "fraud_rate": 0.007549
+      }
+    }
+  },
+  "models": {
+    "rules": {
+      "metrics": {
+        "pr_auc": 0.4829,
+        "roc_auc": 0.8311,
+        "recall_at_0.5pct_fpr": 0.4847,
+        "recall_at_1pct_fpr": 0.5038,
+        "precision_at_10_per_day": 0.815,
+        "precision_at_50_per_day": 0.37
+      },
+      "ci95": {
+        "pr_auc": [
+          0.3805,
+          0.571
+        ],
+        "recall_at_1pct_fpr": [
+          0.3989,
+          0.5882
+        ]
+      },
+      "per_pattern_at_1pct_fpr": {
+        "fraud_ring": {
+          "transactions": 384,
+          "recall": 0.3724,
+          "attacks": 5,
+          "attacks_detected": 0.8
+        },
+        "money_mule": {
+          "transactions": 170,
+          "recall": 0.7294,
+          "attacks": 36,
+          "attacks_detected": 1.0
+        },
+        "account_takeover": {
+          "transactions": 92,
+          "recall": 0.9891,
+          "attacks": 26,
+          "attacks_detected": 1.0
+        },
+        "card_testing": {
+          "transactions": 140,
+          "recall": 0.2714,
+          "attacks": 6,
+          "attacks_detected": 1.0
+        }
+      },
+      "money": {
+        "threshold": 4.051202066242695,
+        "alerts_per_day": 33.9,
+        "alert_precision": 0.551,
+        "fraud_recall": 0.4746,
+        "money_saved": 163349.66,
+        "share_of_loss_saved": 0.6127,
+        "budget_50_per_day": {
+          "alerts_per_day": 50.0,
+          "alert_precision": 0.37,
+          "fraud_recall": 0.4707,
+          "money_saved": 156709.07,
+          "share_of_loss_saved": 0.5878
+        },
+        "loss_without_model": 266586.85,
+        "oracle_saved": 262656.85
+      },
+      "fit": {
+        "fit_seconds": 0.0
+      }
+    },
+    "gbdt_tabular": {
+      "metrics": {
+        "pr_auc": 0.7175,
+        "roc_auc": 0.9929,
+        "recall_at_0.5pct_fpr": 0.785,
+        "recall_at_1pct_fpr": 0.8677,
+        "precision_at_10_per_day": 0.805,
+        "precision_at_50_per_day": 0.521
+      },
+      "ci95": {
+        "pr_auc": [
+          0.6429,
+          0.7748
+        ],
+        "recall_at_1pct_fpr": [
+          0.8091,
+          0.9114
+        ]
+      },
+      "per_pattern_at_1pct_fpr": {
+        "fraud_ring": {
+          "transactions": 384,
+          "recall": 0.7943,
+          "attacks": 5,
+          "attacks_detected": 1.0
+        },
+        "money_mule": {
+          "transactions": 170,
+          "recall": 0.9706,
+          "attacks": 36,
+          "attacks_detected": 1.0
+        },
+        "account_takeover": {
+          "transactions": 92,
+          "recall": 0.8587,
+          "attacks": 26,
+          "attacks_detected": 1.0
+        },
+        "card_testing": {
+          "transactions": 140,
+          "recall": 0.95,
+          "attacks": 6,
+          "attacks_detected": 1.0
+        }
+      },
+      "money": {
+        "threshold": 0.08195459597913698,
+        "alerts_per_day": 38.5,
+        "alert_precision": 0.6809,
+        "fraud_recall": 0.6679,
+        "money_saved": 216173.81,
+        "share_of_loss_saved": 0.8109,
+        "budget_50_per_day": {
+          "alerts_per_day": 50.0,
+          "alert_precision": 0.521,
+          "fraud_recall": 0.6628,
+          "money_saved": 209310.65,
+          "share_of_loss_saved": 0.7851
+        },
+        "loss_without_model": 266586.85,
+        "oracle_saved": 262656.85
+      },
+      "fit": {
+        "fit_seconds": 5.9,
+        "trees": 360,
+        "features": 22,
+        "val_curve": [
+          [
+            20,
+            0.6969
+          ],
+          [
+            40,
+            0.7173
+          ],
+          [
+            60,
+            0.7222
+          ],
+          [
+            80,
+            0.7266
+          ],
+          [
+            100,
+            0.7314
+          ],
+          [
+            120,
+            0.736
+          ],
+          [
+            140,
+            0.7368
+          ],
+          [
+            160,
+            0.7363
+          ],
+          [
+            180,
+            0.7352
+          ],
+          [
+            200,
+            0.7365
+          ],
+          [
+            220,
+            0.7374
+          ],
+          [
+            240,
+            0.7376
+          ],
+          [
+            260,
+            0.7401
+          ],
+          [
+            280,
+            0.7401
+          ],
+          [
+            300,
+            0.74
+          ],
+          [
+            320,
+            0.7407
+          ],
+          [
+            340,
+            0.7404
+          ],
+          [
+            360,
+            0.7417
+          ],
+          [
+            380,
+            0.7414
+          ],
+          [
+            400,
+            0.7412
+          ]
+        ]
+      }
+    },
+    "gbdt_streaming": {
+      "metrics": {
+        "pr_auc": 0.8173,
+        "roc_auc": 0.9939,
+        "recall_at_0.5pct_fpr": 0.841,
+        "recall_at_1pct_fpr": 0.8893,
+        "precision_at_10_per_day": 0.945,
+        "precision_at_50_per_day": 0.572
+      },
+      "ci95": {
+        "pr_auc": [
+          0.7574,
+          0.8862
+        ],
+        "recall_at_1pct_fpr": [
+          0.8105,
+          0.9622
+        ]
+      },
+      "per_pattern_at_1pct_fpr": {
+        "fraud_ring": {
+          "transactions": 384,
+          "recall": 0.7839,
+          "attacks": 5,
+          "attacks_detected": 1.0
+        },
+        "money_mule": {
+          "transactions": 170,
+          "recall": 0.9824,
+          "attacks": 36,
+          "attacks_detected": 1.0
+        },
+        "account_takeover": {
+          "transactions": 92,
+          "recall": 1.0,
+          "attacks": 26,
+          "attacks_detected": 1.0
+        },
+        "card_testing": {
+          "transactions": 140,
+          "recall": 0.9929,
+          "attacks": 6,
+          "attacks_detected": 1.0
+        }
+      },
+      "money": {
+        "threshold": 0.28992654938606033,
+        "alerts_per_day": 25.4,
+        "alert_precision": 0.9112,
+        "fraud_recall": 0.5878,
+        "money_saved": 195181.91,
+        "share_of_loss_saved": 0.7322,
+        "budget_50_per_day": {
+          "alerts_per_day": 50.0,
+          "alert_precision": 0.572,
+          "fraud_recall": 0.7277,
+          "money_saved": 213694.11,
+          "share_of_loss_saved": 0.8016
+        },
+        "loss_without_model": 266586.85,
+        "oracle_saved": 262656.85
+      },
+      "fit": {
+        "fit_seconds": 7.77,
+        "trees": 120,
+        "features": 38,
+        "val_curve": [
+          [
+            20,
+            0.8236
+          ],
+          [
+            40,
+            0.8459
+          ],
+          [
+            60,
+            0.8602
+          ],
+          [
+            80,
+            0.8674
+          ],
+          [
+            100,
+            0.8686
+          ],
+          [
+            120,
+            0.8696
+          ],
+          [
+            140,
+            0.868
+          ],
+          [
+            160,
+            0.8654
+          ],
+          [
+            180,
+            0.865
+          ],
+          [
+            200,
+            0.8634
+          ],
+          [
+            220,
+            0.8636
+          ],
+          [
+            240,
+            0.8628
+          ],
+          [
+            260,
+            0.8636
+          ],
+          [
+            280,
+            0.8631
+          ],
+          [
+            300,
+            0.8629
+          ],
+          [
+            320,
+            0.8639
+          ],
+          [
+            340,
+            0.8645
+          ],
+          [
+            360,
+            0.8638
+          ],
+          [
+            380,
+            0.8637
+          ],
+          [
+            400,
+            0.8627
+          ]
+        ]
+      }
+    },
+    "gbdt": {
+      "metrics": {
+        "pr_auc": 0.8772,
+        "roc_auc": 0.9985,
+        "recall_at_0.5pct_fpr": 0.9249,
+        "recall_at_1pct_fpr": 0.9733,
+        "precision_at_10_per_day": 0.96,
+        "precision_at_50_per_day": 0.59
+      },
+      "ci95": {
+        "pr_auc": [
+          0.8425,
+          0.9111
+        ],
+        "recall_at_1pct_fpr": [
+          0.9521,
+          0.9857
+        ]
+      },
+      "per_pattern_at_1pct_fpr": {
+        "fraud_ring": {
+          "transactions": 384,
+          "recall": 0.9479,
+          "attacks": 5,
+          "attacks_detected": 1.0
+        },
+        "money_mule": {
+          "transactions": 170,
+          "recall": 0.9941,
+          "attacks": 36,
+          "attacks_detected": 1.0
+        },
+        "account_takeover": {
+          "transactions": 92,
+          "recall": 1.0,
+          "attacks": 26,
+          "attacks_detected": 1.0
+        },
+        "card_testing": {
+          "transactions": 140,
+          "recall": 1.0,
+          "attacks": 6,
+          "attacks_detected": 1.0
+        }
+      },
+      "money": {
+        "threshold": 0.19602442925862626,
+        "alerts_per_day": 27.0,
+        "alert_precision": 0.913,
+        "fraud_recall": 0.6272,
+        "money_saved": 199148.27,
+        "share_of_loss_saved": 0.747,
+        "budget_50_per_day": {
+          "alerts_per_day": 50.0,
+          "alert_precision": 0.59,
+          "fraud_recall": 0.7506,
+          "money_saved": 214609.27,
+          "share_of_loss_saved": 0.805
+        },
+        "loss_without_model": 266586.85,
+        "oracle_saved": 262656.85
+      },
+      "fit": {
+        "fit_seconds": 13.54,
+        "trees": 300,
+        "features": 53,
+        "val_curve": [
+          [
+            20,
+            0.8266
+          ],
+          [
+            40,
+            0.8431
+          ],
+          [
+            60,
+            0.8546
+          ],
+          [
+            80,
+            0.8556
+          ],
+          [
+            100,
+            0.855
+          ],
+          [
+            120,
+            0.8573
+          ],
+          [
+            140,
+            0.8595
+          ],
+          [
+            160,
+            0.8598
+          ],
+          [
+            180,
+            0.8632
+          ],
+          [
+            200,
+            0.8643
+          ],
+          [
+            220,
+            0.8664
+          ],
+          [
+            240,
+            0.8664
+          ],
+          [
+            260,
+            0.8667
+          ],
+          [
+            280,
+            0.8665
+          ],
+          [
+            300,
+            0.8669
+          ],
+          [
+            320,
+            0.8664
+          ],
+          [
+            340,
+            0.8664
+          ],
+          [
+            360,
+            0.8663
+          ],
+          [
+            380,
+            0.8662
+          ],
+          [
+            400,
+            0.8668
+          ]
+        ]
+      }
+    },
+    "graphsage": {
+      "metrics": {
+        "pr_auc": 0.7204,
+        "roc_auc": 0.9865,
+        "recall_at_0.5pct_fpr": 0.7036,
+        "recall_at_1pct_fpr": 0.7506,
+        "precision_at_10_per_day": 0.95,
+        "precision_at_50_per_day": 0.513
+      },
+      "ci95": {
+        "pr_auc": [
+          0.6354,
+          0.8013
+        ],
+        "recall_at_1pct_fpr": [
+          0.6389,
+          0.8603
+        ]
+      },
+      "per_pattern_at_1pct_fpr": {
+        "fraud_ring": {
+          "transactions": 384,
+          "recall": 0.5052,
+          "attacks": 5,
+          "attacks_detected": 0.8
+        },
+        "money_mule": {
+          "transactions": 170,
+          "recall": 0.9765,
+          "attacks": 36,
+          "attacks_detected": 1.0
+        },
+        "account_takeover": {
+          "transactions": 92,
+          "recall": 1.0,
+          "attacks": 26,
+          "attacks_detected": 1.0
+        },
+        "card_testing": {
+          "transactions": 140,
+          "recall": 0.9857,
+          "attacks": 6,
+          "attacks_detected": 1.0
+        }
+      },
+      "money": {
+        "threshold": 0.8211567401885986,
+        "alerts_per_day": 20.6,
+        "alert_precision": 0.9343,
+        "fraud_recall": 0.4885,
+        "money_saved": 180087.52,
+        "share_of_loss_saved": 0.6755,
+        "budget_50_per_day": {
+          "alerts_per_day": 50.0,
+          "alert_precision": 0.513,
+          "fraud_recall": 0.6527,
+          "money_saved": 194614.0,
+          "share_of_loss_saved": 0.73
+        },
+        "loss_without_model": 266586.85,
+        "oracle_saved": 262656.85
+      },
+      "fit": {
+        "fit_seconds": 36.86,
+        "best_epoch": 22,
+        "val_curve": [
+          [
+            1,
+            0.4822
+          ],
+          [
+            2,
+            0.7176
+          ],
+          [
+            3,
+            0.8289
+          ],
+          [
+            4,
+            0.8577
+          ],
+          [
+            5,
+            0.8681
+          ],
+          [
+            6,
+            0.8353
+          ],
+          [
+            7,
+            0.8567
+          ],
+          [
+            8,
+            0.8767
+          ],
+          [
+            9,
+            0.8728
+          ],
+          [
+            10,
+            0.8829
+          ],
+          [
+            11,
+            0.8697
+          ],
+          [
+            12,
+            0.8815
+          ],
+          [
+            13,
+            0.8736
+          ],
+          [
+            14,
+            0.8878
+          ],
+          [
+            15,
+            0.8598
+          ],
+          [
+            16,
+            0.8557
+          ],
+          [
+            17,
+            0.8705
+          ],
+          [
+            18,
+            0.8884
+          ],
+          [
+            19,
+            0.883
+          ],
+          [
+            20,
+            0.8862
+          ],
+          [
+            21,
+            0.8787
+          ],
+          [
+            22,
+            0.9007
+          ],
+          [
+            23,
+            0.8888
+          ],
+          [
+            24,
+            0.8657
+          ],
+          [
+            25,
+            0.89
+          ],
+          [
+            26,
+            0.8924
+          ],
+          [
+            27,
+            0.8832
+          ],
+          [
+            28,
+            0.8844
+          ]
+        ]
+      }
+    },
+    "gbdt+graphsage": {
+      "metrics": {
+        "pr_auc": 0.8044,
+        "roc_auc": 0.9966,
+        "recall_at_0.5pct_fpr": 0.7735,
+        "recall_at_1pct_fpr": 0.874,
+        "precision_at_10_per_day": 0.96,
+        "precision_at_50_per_day": 0.548
+      },
+      "ci95": {
+        "pr_auc": [
+          0.7488,
+          0.8603
+        ],
+        "recall_at_1pct_fpr": [
+          0.8186,
+          0.9336
+        ]
+      },
+      "per_pattern_at_1pct_fpr": {
+        "fraud_ring": {
+          "transactions": 384,
+          "recall": 0.75,
+          "attacks": 5,
+          "attacks_detected": 1.0
+        },
+        "money_mule": {
+          "transactions": 170,
+          "recall": 0.9882,
+          "attacks": 36,
+          "attacks_detected": 1.0
+        },
+        "account_takeover": {
+          "transactions": 92,
+          "recall": 1.0,
+          "attacks": 26,
+          "attacks_detected": 1.0
+        },
+        "card_testing": {
+          "transactions": 140,
+          "recall": 0.9929,
+          "attacks": 6,
+          "attacks_detected": 1.0
+        }
+      },
+      "money": {
+        "threshold": 0.5028508601041026,
+        "alerts_per_day": 22.9,
+        "alert_precision": 0.9475,
+        "fraud_recall": 0.5509,
+        "money_saved": 182068.75,
+        "share_of_loss_saved": 0.683,
+        "budget_50_per_day": {
+          "alerts_per_day": 50.0,
+          "alert_precision": 0.548,
+          "fraud_recall": 0.6972,
+          "money_saved": 203151.03,
+          "share_of_loss_saved": 0.762
+        },
+        "loss_without_model": 266586.85,
+        "oracle_saved": 262656.85
+      },
+      "fit": {
+        "fit_seconds": 50.4
+      }
+    }
+  },
+  "ablation": {
+    "tabular": {
+      "groups": [
+        "amount",
+        "time",
+        "account",
+        "velocity",
+        "context",
+        "device_account",
+        "flow"
+      ],
+      "pr_auc": 0.7175,
+      "recall_at_1pct_fpr": 0.8677,
+      "pattern_recall_at_1pct_fpr": {
+        "fraud_ring": 0.7943,
+        "money_mule": 0.9706,
+        "account_takeover": 0.8587,
+        "card_testing": 0.95
+      },
+      "delta_pr_auc_vs_tabular": 0.0,
+      "delta_pr_auc_vs_all": -0.1597,
+      "delta_vs_tabular_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "tabular+shared_device": {
+      "groups": [
+        "amount",
+        "time",
+        "account",
+        "velocity",
+        "context",
+        "device_account",
+        "flow",
+        "shared_device"
+      ],
+      "pr_auc": 0.8146,
+      "recall_at_1pct_fpr": 0.9262,
+      "pattern_recall_at_1pct_fpr": {
+        "fraud_ring": 0.8776,
+        "money_mule": 0.9647,
+        "account_takeover": 0.9457,
+        "card_testing": 1.0
+      },
+      "delta_pr_auc_vs_tabular": 0.0971,
+      "delta_pr_auc_vs_all": -0.0626,
+      "delta_vs_tabular_ci95": [
+        0.061,
+        0.1381
+      ]
+    },
+    "tabular+counterparty": {
+      "groups": [
+        "amount",
+        "time",
+        "account",
+        "velocity",
+        "context",
+        "device_account",
+        "flow",
+        "counterparty"
+      ],
+      "pr_auc": 0.7377,
+      "recall_at_1pct_fpr": 0.8779,
+      "pattern_recall_at_1pct_fpr": {
+        "fraud_ring": 0.8021,
+        "money_mule": 0.9824,
+        "account_takeover": 0.8696,
+        "card_testing": 0.9643
+      },
+      "delta_pr_auc_vs_tabular": 0.0202,
+      "delta_pr_auc_vs_all": -0.1395,
+      "delta_vs_tabular_ci95": [
+        0.009,
+        0.0333
+      ]
+    },
+    "tabular+risk": {
+      "groups": [
+        "amount",
+        "time",
+        "account",
+        "velocity",
+        "context",
+        "device_account",
+        "flow",
+        "risk"
+      ],
+      "pr_auc": 0.8239,
+      "recall_at_1pct_fpr": 0.9288,
+      "pattern_recall_at_1pct_fpr": {
+        "fraud_ring": 0.8672,
+        "money_mule": 0.9882,
+        "account_takeover": 0.9891,
+        "card_testing": 0.9857
+      },
+      "delta_pr_auc_vs_tabular": 0.1064,
+      "delta_pr_auc_vs_all": -0.0533,
+      "delta_vs_tabular_ci95": [
+        0.0738,
+        0.1483
+      ]
+    },
+    "tabular+degree": {
+      "groups": [
+        "amount",
+        "time",
+        "account",
+        "velocity",
+        "context",
+        "device_account",
+        "flow",
+        "degree"
+      ],
+      "pr_auc": 0.8269,
+      "recall_at_1pct_fpr": 0.9288,
+      "pattern_recall_at_1pct_fpr": {
+        "fraud_ring": 0.8854,
+        "money_mule": 0.9765,
+        "account_takeover": 0.9239,
+        "card_testing": 0.9929
+      },
+      "delta_pr_auc_vs_tabular": 0.1094,
+      "delta_pr_auc_vs_all": -0.0503,
+      "delta_vs_tabular_ci95": [
+        0.0844,
+        0.1402
+      ]
+    },
+    "tabular+pagerank": {
+      "groups": [
+        "amount",
+        "time",
+        "account",
+        "velocity",
+        "context",
+        "device_account",
+        "flow",
+        "pagerank"
+      ],
+      "pr_auc": 0.8334,
+      "recall_at_1pct_fpr": 0.9402,
+      "pattern_recall_at_1pct_fpr": {
+        "fraud_ring": 0.901,
+        "money_mule": 0.9882,
+        "account_takeover": 0.9239,
+        "card_testing": 1.0
+      },
+      "delta_pr_auc_vs_tabular": 0.1159,
+      "delta_pr_auc_vs_all": -0.0438,
+      "delta_vs_tabular_ci95": [
+        0.079,
+        0.1704
+      ]
+    },
+    "tabular+community": {
+      "groups": [
+        "amount",
+        "time",
+        "account",
+        "velocity",
+        "context",
+        "device_account",
+        "flow",
+        "community"
+      ],
+      "pr_auc": 0.8069,
+      "recall_at_1pct_fpr": 0.9351,
+      "pattern_recall_at_1pct_fpr": {
+        "fraud_ring": 0.9219,
+        "money_mule": 0.9765,
+        "account_takeover": 0.8587,
+        "card_testing": 0.9714
+      },
+      "delta_pr_auc_vs_tabular": 0.0894,
+      "delta_pr_auc_vs_all": -0.0703,
+      "delta_vs_tabular_ci95": [
+        0.0529,
+        0.1313
+      ]
+    },
+    "all-shared_device": {
+      "groups": [
+        "amount",
+        "time",
+        "account",
+        "velocity",
+        "context",
+        "device_account",
+        "flow",
+        "counterparty",
+        "risk",
+        "degree",
+        "pagerank",
+        "community"
+      ],
+      "pr_auc": 0.8862,
+      "recall_at_1pct_fpr": 0.9746,
+      "pattern_recall_at_1pct_fpr": {
+        "fraud_ring": 0.9531,
+        "money_mule": 0.9882,
+        "account_takeover": 1.0,
+        "card_testing": 1.0
+      },
+      "delta_pr_auc_vs_tabular": 0.1687,
+      "delta_pr_auc_vs_all": 0.009,
+      "delta_vs_tabular_ci95": [
+        0.1263,
+        0.2319
+      ]
+    },
+    "all-counterparty": {
+      "groups": [
+        "amount",
+        "time",
+        "account",
+        "velocity",
+        "context",
+        "device_account",
+        "flow",
+        "shared_device",
+        "risk",
+        "degree",
+        "pagerank",
+        "community"
+      ],
+      "pr_auc": 0.8794,
+      "recall_at_1pct_fpr": 0.9707,
+      "pattern_recall_at_1pct_fpr": {
+        "fraud_ring": 0.9453,
+        "money_mule": 0.9882,
+        "account_takeover": 1.0,
+        "card_testing": 1.0
+      },
+      "delta_pr_auc_vs_tabular": 0.1619,
+      "delta_pr_auc_vs_all": 0.0022,
+      "delta_vs_tabular_ci95": [
+        0.1184,
+        0.2206
+      ]
+    },
+    "all-risk": {
+      "groups": [
+        "amount",
+        "time",
+        "account",
+        "velocity",
+        "context",
+        "device_account",
+        "flow",
+        "shared_device",
+        "counterparty",
+        "degree",
+        "pagerank",
+        "community"
+      ],
+      "pr_auc": 0.7877,
+      "recall_at_1pct_fpr": 0.9173,
+      "pattern_recall_at_1pct_fpr": {
+        "fraud_ring": 0.8646,
+        "money_mule": 0.9765,
+        "account_takeover": 0.9022,
+        "card_testing": 1.0
+      },
+      "delta_pr_auc_vs_tabular": 0.0702,
+      "delta_pr_auc_vs_all": -0.0895,
+      "delta_vs_tabular_ci95": [
+        0.0393,
+        0.1183
+      ]
+    },
+    "all-degree": {
+      "groups": [
+        "amount",
+        "time",
+        "account",
+        "velocity",
+        "context",
+        "device_account",
+        "flow",
+        "shared_device",
+        "counterparty",
+        "risk",
+        "pagerank",
+        "community"
+      ],
+      "pr_auc": 0.8702,
+      "recall_at_1pct_fpr": 0.9784,
+      "pattern_recall_at_1pct_fpr": {
+        "fraud_ring": 0.9557,
+        "money_mule": 1.0,
+        "account_takeover": 1.0,
+        "card_testing": 1.0
+      },
+      "delta_pr_auc_vs_tabular": 0.1527,
+      "delta_pr_auc_vs_all": -0.007,
+      "delta_vs_tabular_ci95": [
+        0.1102,
+        0.2093
+      ]
+    },
+    "all-pagerank": {
+      "groups": [
+        "amount",
+        "time",
+        "account",
+        "velocity",
+        "context",
+        "device_account",
+        "flow",
+        "shared_device",
+        "counterparty",
+        "risk",
+        "degree",
+        "community"
+      ],
+      "pr_auc": 0.8715,
+      "recall_at_1pct_fpr": 0.9656,
+      "pattern_recall_at_1pct_fpr": {
+        "fraud_ring": 0.9349,
+        "money_mule": 0.9882,
+        "account_takeover": 1.0,
+        "card_testing": 1.0
+      },
+      "delta_pr_auc_vs_tabular": 0.154,
+      "delta_pr_auc_vs_all": -0.0057,
+      "delta_vs_tabular_ci95": [
+        0.1151,
+        0.2125
+      ]
+    },
+    "all-community": {
+      "groups": [
+        "amount",
+        "time",
+        "account",
+        "velocity",
+        "context",
+        "device_account",
+        "flow",
+        "shared_device",
+        "counterparty",
+        "risk",
+        "degree",
+        "pagerank"
+      ],
+      "pr_auc": 0.83,
+      "recall_at_1pct_fpr": 0.9211,
+      "pattern_recall_at_1pct_fpr": {
+        "fraud_ring": 0.8411,
+        "money_mule": 0.9941,
+        "account_takeover": 1.0,
+        "card_testing": 1.0
+      },
+      "delta_pr_auc_vs_tabular": 0.1125,
+      "delta_pr_auc_vs_all": -0.0472,
+      "delta_vs_tabular_ci95": [
+        0.0599,
+        0.1919
+      ]
+    },
+    "all": {
+      "groups": [
+        "amount",
+        "time",
+        "account",
+        "velocity",
+        "context",
+        "device_account",
+        "flow",
+        "shared_device",
+        "counterparty",
+        "risk",
+        "degree",
+        "pagerank",
+        "community"
+      ],
+      "pr_auc": 0.8772,
+      "recall_at_1pct_fpr": 0.9733,
+      "pattern_recall_at_1pct_fpr": {
+        "fraud_ring": 0.9479,
+        "money_mule": 0.9941,
+        "account_takeover": 1.0,
+        "card_testing": 1.0
+      },
+      "delta_pr_auc_vs_tabular": 0.1597,
+      "delta_pr_auc_vs_all": 0.0,
+      "delta_vs_tabular_ci95": [
+        0.1167,
+        0.2185
+      ]
+    }
+  },
+  "protocol": {
+    "split": {
+      "build_day": 70,
+      "gap_days": [
+        70,
+        70
+      ],
+      "train": {
+        "days": [
+          7,
+          56
+        ],
+        "transactions": 235132,
+        "fraud": 1619,
+        "fraud_rate": 0.006885,
+        "fraud_unlabelled_at_build": 0.3947
+      },
+      "val": {
+        "days": [
+          56,
+          70
+        ],
+        "transactions": 70343,
+        "fraud": 458,
+        "fraud_rate": 0.006511,
+        "fraud_unlabelled_at_build": 0.6769
+      },
+      "test": {
+        "days": [
+          70,
+          90
+        ],
+        "transactions": 104125,
+        "fraud": 786,
+        "fraud_rate": 0.007549
+      }
+    },
+    "gbdt": {
+      "no_gap": {
+        "pr_auc": 0.7843,
+        "recall_at_1pct_fpr": 0.9631,
+        "ring_recall_at_1pct_fpr": 0.9375,
+        "money_saved": 161076.0
+      },
+      "with_gap": {
+        "pr_auc": 0.8772,
+        "recall_at_1pct_fpr": 0.9733,
+        "ring_recall_at_1pct_fpr": 0.9479,
+        "money_saved": 199148.27
+      }
+    },
+    "graphsage": {
+      "no_gap": {
+        "pr_auc": 0.789,
+        "recall_at_1pct_fpr": 0.8435,
+        "ring_recall_at_1pct_fpr": 0.6849,
+        "money_saved": 193207.13
+      },
+      "with_gap": {
+        "pr_auc": 0.7204,
+        "recall_at_1pct_fpr": 0.7506,
+        "ring_recall_at_1pct_fpr": 0.5052,
+        "money_saved": 180087.52
+      }
+    }
+  },
+  "leakage_cost": {
+    "leaky_model_on_leaky_features": {
+      "pr_auc": 0.9226,
+      "recall_at_1pct_fpr": 0.9949
+    },
+    "leaky_model_on_online_features": {
+      "pr_auc": 0.5472,
+      "recall_at_1pct_fpr": 0.5394
+    },
+    "honest_model_on_online_features": {
+      "pr_auc": 0.8772,
+      "recall_at_1pct_fpr": 0.9733
+    }
+  },
+  "point_in_time": {
+    "dataset_days": 30,
+    "cut_day": 21.291666666666668,
+    "transactions": 139394,
+    "honest": {
+      "passed": true,
+      "seconds": 11.5,
+      "checks": [
+        {
+          "variant": "prefix_replay",
+          "rows": 97161,
+          "values": 5149533,
+          "mismatched_values": 0,
+          "mismatched_features": []
+        },
+        {
+          "variant": "scrambled_future",
+          "rows": 97161,
+          "values": 5149533,
+          "mismatched_values": 0,
+          "mismatched_features": []
+        }
+      ]
+    },
+    "leaky_instant_labels": {
+      "passed": false,
+      "seconds": 11.6,
+      "checks": [
+        {
+          "variant": "prefix_replay",
+          "rows": 97161,
+          "values": 5149533,
+          "mismatched_values": 55160,
+          "mismatched_features": [
+            "device_known_fraud",
+            "acct_known_fraud",
+            "cp_known_fraud",
+            "acct_devices_known_fraud",
+            "acct_ppr_risk",
+            "device_ppr_risk",
+            "cp_ppr_risk",
+            "comm_known_fraud"
+          ]
+        },
+        {
+          "variant": "scrambled_future",
+          "rows": 97161,
+          "values": 5149533,
+          "mismatched_values": 115207,
+          "mismatched_features": [
+            "device_known_fraud",
+            "acct_known_fraud",
+            "cp_known_fraud",
+            "acct_devices_known_fraud",
+            "acct_ppr_risk",
+            "device_ppr_risk",
+            "cp_ppr_risk",
+            "comm_known_fraud"
+          ]
+        }
+      ]
+    }
+  },
+  "latency": {
+    "transactions": 2000,
+    "warmup": 50,
+    "in_process": {
+      "rules": {
+        "p50_ms": 0.07,
+        "p95_ms": 0.078,
+        "p99_ms": 0.09,
+        "max_ms": 0.199,
+        "throughput_per_s": 14131.8
+      },
+      "rules_no_reasons": {
+        "p50_ms": 0.049,
+        "p95_ms": 0.151,
+        "p99_ms": 0.241,
+        "max_ms": 0.455,
+        "throughput_per_s": 15194.7
+      },
+      "gbdt": {
+        "p50_ms": 1.282,
+        "p95_ms": 1.777,
+        "p99_ms": 3.185,
+        "max_ms": 76.702,
+        "throughput_per_s": 695.0
+      },
+      "gbdt_no_reasons": {
+        "p50_ms": 1.2,
+        "p95_ms": 1.458,
+        "p99_ms": 1.584,
+        "max_ms": 13.555,
+        "throughput_per_s": 810.2
+      },
+      "graphsage": {
+        "p50_ms": 0.066,
+        "p95_ms": 0.072,
+        "p99_ms": 0.083,
+        "max_ms": 0.165,
+        "throughput_per_s": 14894.5
+      },
+      "graphsage_no_reasons": {
+        "p50_ms": 0.044,
+        "p95_ms": 0.049,
+        "p99_ms": 0.061,
+        "max_ms": 0.15,
+        "throughput_per_s": 22306.7
+      }
+    },
+    "online_offline_feature_max_abs_diff": 0.0,
+    "http": {
+      "client": {
+        "p50_ms": 2.148,
+        "p95_ms": 2.517,
+        "p99_ms": 2.773,
+        "max_ms": 3.229,
+        "throughput_per_s": 458.0
+      },
+      "server": {
+        "p50_ms": 1.6,
+        "p95_ms": 1.927,
+        "p99_ms": 2.117,
+        "max_ms": 2.553,
+        "throughput_per_s": 611.5
+      }
+    },
+    "snapshot_refresh_s": {
+      "graph_features": 0.236,
+      "gnn_embeddings": 0.008,
+      "nodes": 12144
+    }
+  },
+  "seeds": {
+    "42": {
+      "rules": {
+        "pr_auc": 0.4829,
+        "recall_at_1pct_fpr": 0.5038
+      },
+      "gbdt_tabular": {
+        "pr_auc": 0.7175,
+        "recall_at_1pct_fpr": 0.8677
+      },
+      "gbdt": {
+        "pr_auc": 0.8772,
+        "recall_at_1pct_fpr": 0.9733
+      },
+      "graphsage": {
+        "pr_auc": 0.7204,
+        "recall_at_1pct_fpr": 0.7506
+      }
+    },
+    "7": {
+      "rules": {
+        "pr_auc": 0.589,
+        "recall_at_1pct_fpr": 0.6025
+      },
+      "gbdt_tabular": {
+        "pr_auc": 0.8178,
+        "recall_at_1pct_fpr": 0.9383
+      },
+      "gbdt": {
+        "pr_auc": 0.937,
+        "recall_at_1pct_fpr": 0.9815
+      },
+      "graphsage": {
+        "pr_auc": 0.9586,
+        "recall_at_1pct_fpr": 0.9864
+      }
+    },
+    "2026": {
+      "rules": {
+        "pr_auc": 0.5237,
+        "recall_at_1pct_fpr": 0.5591
+      },
+      "gbdt_tabular": {
+        "pr_auc": 0.6525,
+        "recall_at_1pct_fpr": 0.8567
+      },
+      "gbdt": {
+        "pr_auc": 0.9071,
+        "recall_at_1pct_fpr": 0.9449
+      },
+      "graphsage": {
+        "pr_auc": 0.8974,
+        "recall_at_1pct_fpr": 0.9559
+      }
+    }
+  }
+}

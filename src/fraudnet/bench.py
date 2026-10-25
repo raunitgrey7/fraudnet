@@ -41,7 +41,7 @@ from fraudnet.evaluation.metrics import (
     threshold_at_fpr,
     top_k_per_day,
 )
-from fraudnet.evaluation.report import check_thresholds, render_markdown, update_readme
+from fraudnet.evaluation.report import check_thresholds, render_markdown, update_readme, update_report
 from fraudnet.evaluation.split import TimeSplit
 from fraudnet.features.leakage import check_point_in_time, known_at
 from fraudnet.features.replay import GnnSnapshot, replay
@@ -514,6 +514,7 @@ def run(
     if extra_seeds:
         others = _timed(timings, "seeds", lambda: seed_robustness(extra_seeds, profile, data_dir))
         results["seeds"] = {str(seed): _seed_row(results), **others}
+        results["seeds_summary"] = _seed_summary(results["seeds"])
     timings["total"] = _r(time.perf_counter() - started, 1)
     results["meta"]["seconds"] = timings
     return results
@@ -526,6 +527,23 @@ def _seed_row(results: dict[str, Any]) -> dict[str, Any]:
         for k in keep
         if k in results["models"]
     }
+
+
+def _seed_summary(seeds: dict[str, dict[str, dict[str, float]]]) -> dict[str, dict[str, float]]:
+    """Mean, sample standard deviation, minimum and maximum of each metric across seeds."""
+    models = [m for m in next(iter(seeds.values())) if all(m in row for row in seeds.values())]
+    out: dict[str, dict[str, float]] = {}
+    for model in models:
+        out[model] = {}
+        for metric in ("pr_auc", "recall_at_1pct_fpr"):
+            values = np.array([row[model][metric] for row in seeds.values()])
+            out[model] |= {
+                f"{metric}_mean": _r(values.mean()),
+                f"{metric}_std": _r(values.std(ddof=1)) if values.size > 1 else 0.0,
+                f"{metric}_min": _r(values.min()),
+                f"{metric}_max": _r(values.max()),
+            }
+    return out
 
 
 def _meta(seed: int, profile: str) -> dict[str, Any]:
@@ -563,7 +581,9 @@ def _parse(argv: list[str] | None) -> argparse.Namespace:
         "--check", action="store_true", help="compare results with benchmarks/thresholds.json"
     )
     parser.add_argument("--check-only", action="store_true", help="only check an existing results file")
-    parser.add_argument("--update-readme", action="store_true", help="copy the tables into README.md")
+    parser.add_argument(
+        "--update-readme", action="store_true", help="copy the tables into README.md and REPORT.md"
+    )
     return parser.parse_args(argv)
 
 
@@ -583,7 +603,9 @@ def main(argv: list[str] | None = None) -> int:
     results = json.loads(out.read_text())
     if args.update_readme:
         update_readme(ROOT / "README.md", results)
-        print("README.md tables updated")
+        if (ROOT / "REPORT.md").exists() and not args.quick:
+            update_report(ROOT / "REPORT.md", results)
+        print("README.md and REPORT.md tables updated")
     if args.check or args.check_only:
         failures = check_thresholds(results, BENCH_DIR / "thresholds.json")
         for failure in failures:

@@ -221,13 +221,16 @@ def seeds_table(results: dict[str, Any]) -> list[str]:
     seeds = results.get("seeds")
     if not seeds:
         return []
-    models = [
-        m for m in ("rules", "gbdt_tabular", "gbdt", "graphsage") if all(m in v for v in seeds.values())
-    ]
+    summary = results["seeds_summary"]
+    models = [m for m in ("rules", "gbdt_tabular", "gbdt", "graphsage") if m in summary]
     rows = [[seed] + [_f(v[m]["pr_auc"]) for m in models] for seed, v in seeds.items()]
-    means = [f"{sum(v[m]['pr_auc'] for v in seeds.values()) / len(seeds):.4f}" for m in models]
-    rows.append(["mean", *means])
-    return _table(["seed", *models], rows)
+    rows.append(["mean", *[_f(summary[m]["pr_auc_mean"]) for m in models]])
+    rows.append(["standard deviation", *[_f(summary[m]["pr_auc_std"]) for m in models]])
+    lines = _table(["seed", *models], rows)
+    lines.append(
+        "Test PR-AUC per simulator seed; each seed is a different world with the same configuration."
+    )
+    return [*lines, ""]
 
 
 def dataset_lines(results: dict[str, Any]) -> list[str]:
@@ -327,6 +330,15 @@ def update_readme(path: Path, results: dict[str, Any]) -> None:
     text = path.read_text()
     start, end = text.index(BEGIN) + len(BEGIN), text.index(END)
     path.write_text(text[:start] + "\n" + readme_block(results) + "\n" + text[end:])
+
+
+def update_report(path: Path, results: dict[str, Any]) -> None:
+    """Replace the generated results section of REPORT.md (between the MEASURED markers)."""
+    text = path.read_text()
+    begin, end = "<!-- MEASURED:BEGIN -->", "<!-- MEASURED:END -->"
+    start, stop = text.index(begin) + len(begin), text.index(end)
+    body = render_markdown(results).replace("# Benchmark results\n", "", 1).replace("\n## ", "\n### ")
+    path.write_text(text[:start] + "\n" + body.strip() + "\n" + text[stop:])
 
 
 def _lookup(results: dict[str, Any], path: str) -> Any:

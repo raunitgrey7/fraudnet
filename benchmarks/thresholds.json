@@ -1,0 +1,30 @@
+{
+  "comment": "Quality gate for python -m fraudnet.bench --check. Bounds sit below the values measured on 2026-10-25 (full: seed 42; quick: seed 42; Apple M-series CPU, 2 threads) to absorb platform float differences and slower CI runners; REPORT.md lists the measured values. The point-in-time checks are exact: the honest pipeline must pass and the leaky pipeline must be caught.",
+  "full": [
+    {"path": "models/gbdt/metrics/pr_auc", "min": 0.80},
+    {"path": "models/gbdt/metrics/recall_at_1pct_fpr", "min": 0.90},
+    {"path": "models/gbdt/money/share_of_loss_saved", "min": 0.60},
+    {"path": "models/gbdt/per_pattern_at_1pct_fpr/fraud_ring/recall", "min": 0.80},
+    {"path": "models/gbdt_tabular/metrics/pr_auc", "min": 0.60},
+    {"path": "models/graphsage/metrics/pr_auc", "min": 0.60},
+    {"path": "models/rules/metrics/pr_auc", "min": 0.35},
+    {"path": "ablation/all/delta_pr_auc_vs_tabular", "min": 0.05},
+    {"path": "point_in_time/honest/passed", "equals": true},
+    {"path": "point_in_time/leaky_instant_labels/passed", "equals": false},
+    {"path": "latency/online_offline_feature_max_abs_diff", "max": 0.0},
+    {"path": "latency/in_process/gbdt/p95_ms", "max": 10.0},
+    {"path": "latency/http/server/p95_ms", "max": 25.0}
+  ],
+  "quick": [
+    {"path": "models/gbdt/metrics/pr_auc", "min": 0.45},
+    {"path": "models/gbdt/metrics/recall_at_1pct_fpr", "min": 0.50},
+    {"path": "models/graphsage/metrics/pr_auc", "min": 0.45},
+    {"path": "models/rules/metrics/pr_auc", "min": 0.35},
+    {"path": "ablation/all/delta_pr_auc_vs_tabular", "min": 0.02},
+    {"path": "point_in_time/honest/passed", "equals": true},
+    {"path": "point_in_time/leaky_instant_labels/passed", "equals": false},
+    {"path": "latency/online_offline_feature_max_abs_diff", "max": 0.0},
+    {"path": "latency/in_process/gbdt/p95_ms", "max": 25.0},
+    {"path": "latency/http/server/p95_ms", "max": 50.0}
+  ]
+}

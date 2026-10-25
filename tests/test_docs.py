@@ -52,6 +52,37 @@ def test_readme_ablation_rows_match_results():
         assert float(match.group(1)) == row["pr_auc"]
 
 
+def _values(node: object) -> list[float]:
+    if isinstance(node, dict):
+        return [v for item in node.values() for v in _values(item)]
+    if isinstance(node, list):
+        return [v for item in node for v in _values(item)]
+    return [float(node)] if isinstance(node, int | float) and not isinstance(node, bool) else []
+
+
+def test_numbers_in_readme_prose_come_from_results():
+    """Every precise number in 'What the numbers say' must be a value in results.json, as printed."""
+    results = _results()
+    text = (ROOT / "README.md").read_text()
+    prose = text[text.index("## What the numbers say") : text.index("## Models")]
+    values = _values({k: v for k, v in results.items() if k != "meta"})
+    decimals = re.findall(r"(?<![\d.])(\d+\.\d{3,})(?![\d])", prose)
+    money = re.findall(r"(?<![\d.,])(\d{1,3}(?:,\d{3})+)(?![\d,])", prose)
+    assert decimals and money
+    for token in decimals:
+        places = len(token.split(".")[1])
+        assert any(round(v, places) == float(token) for v in values), f"{token} is not in results.json"
+    for token in money:
+        assert any(round(v) == int(token.replace(",", "")) for v in values), f"{token} is not in results.json"
+
+
+def test_report_block_is_generated_from_results():
+    results = _results()
+    report = (ROOT / "REPORT.md").read_text()
+    assert f"commit `{results['meta']['commit']}`" in report
+    assert f"{results['models']['gbdt']['metrics']['pr_auc']:.4f} [" in report
+
+
 def _text_files() -> list[Path]:
     files = [ROOT / name for name in ("README.md", "REPORT.md", "Makefile", "Dockerfile", "pyproject.toml")]
     files += (

@@ -25,7 +25,7 @@ generated from it by `python -m fraudnet.bench --update-readme`, and `tests/test
 this file against it.
 
 <!-- MEASURED:BEGIN -->
-Seed 42, full profile, generated 2026-10-25T05:49:58Z, commit `ab23bad`, Python 3.13.17, torch 2.14.1, scikit-learn 1.9.1 on arm64 with 2 threads. Total benchmark time 483.8 s.
+Seed 42, full profile, generated 2026-11-27T06:49:31Z, commit `2e2700b`, Python 3.13.17, torch 2.14.1, scikit-learn 1.9.1 on arm64 with 2 threads. Total benchmark time 339.4 s.
 
 ### Dataset
 
@@ -129,16 +129,16 @@ First 30 days (139,394 transactions), cut at day 21.29.
 
 | path | p50 ms | p95 ms | p99 ms | max ms | sequential txn/s |
 |---|---|---|---|---|---|
-| rules | 0.070 | 0.078 | 0.090 | 0.199 | 14131.8 |
-| rules_no_reasons | 0.049 | 0.151 | 0.241 | 0.455 | 15194.7 |
-| gbdt | 1.282 | 1.777 | 3.185 | 76.702 | 695.0 |
-| gbdt_no_reasons | 1.200 | 1.458 | 1.584 | 13.555 | 810.2 |
-| graphsage | 0.066 | 0.072 | 0.083 | 0.165 | 14894.5 |
-| graphsage_no_reasons | 0.044 | 0.049 | 0.061 | 0.150 | 22306.7 |
-| gbdt over HTTP, server side | 1.600 | 1.927 | 2.117 | 2.553 | 611.5 |
-| gbdt over HTTP, client side | 2.148 | 2.517 | 2.773 | 3.229 | 458.0 |
+| rules | 0.068 | 0.074 | 0.086 | 0.131 | 14673.0 |
+| rules_no_reasons | 0.039 | 0.043 | 0.048 | 0.079 | 25654.0 |
+| gbdt | 1.155 | 1.232 | 1.351 | 63.750 | 815.4 |
+| gbdt_no_reasons | 1.113 | 1.264 | 1.423 | 13.041 | 878.4 |
+| graphsage | 0.065 | 0.073 | 0.090 | 0.157 | 15072.2 |
+| graphsage_no_reasons | 0.046 | 0.051 | 0.061 | 0.125 | 21362.7 |
+| gbdt over HTTP, server side | 1.444 | 1.604 | 1.704 | 2.037 | 684.1 |
+| gbdt over HTTP, client side | 1.949 | 2.102 | 2.212 | 2.514 | 509.4 |
 
-2000 test transactions scored one at a time after 50 untimed warm-up transactions; each path covers feature lookup, scoring and reason codes unless marked no_reasons. Online features equal the offline replay features (max absolute difference 0.0). A daily graph refresh over 12,144 nodes takes 0.236 s plus 0.008 s of GNN embedding.
+2000 test transactions scored one at a time after 50 untimed warm-up transactions; each path covers feature lookup, scoring and reason codes unless marked no_reasons. Online features equal the offline replay features (max absolute difference 0.0). A daily graph refresh over 12,144 nodes takes 0.233 s plus 0.007 s of GNN embedding.
 
 ### Seeds
 
@@ -148,6 +148,9 @@ First 30 days (139,394 transactions), cut at day 21.29.
 | 7 | 0.5890 | 0.8178 | 0.9370 | 0.9586 |
 | 2026 | 0.5237 | 0.6525 | 0.9071 | 0.8974 |
 | mean | 0.5319 | 0.7293 | 0.9071 | 0.8588 |
+| standard deviation | 0.0535 | 0.0833 | 0.0299 | 0.1237 |
+
+Test PR-AUC per simulator seed; each seed is a different world with the same configuration.
 <!-- MEASURED:END -->
 
 ## 3. How the design got here (development measurements)
@@ -247,7 +250,42 @@ change slightly from run to run; section 2 has the latest.
 
 ## 6. Commands and outputs
 
-<!-- CLEAN-RUN -->
+Run on macOS 26.5.1 (Apple Silicon), Python 3.13.17 through uv 0.13.5, from the repository root, with the
+machine otherwise idle for the benchmark so that the latency rows are not inflated.
+
+`make lint`
+
+```
+uv run ruff check src tests
+All checks passed!
+uv run ruff format --check src tests
+52 files already formatted
+```
+
+`make test`
+
+```
+uv run pytest -q
+........................................................................ [ 38%]
+........................................................................ [ 76%]
+............................................                             [100%]
+188 passed in 49.46s
+```
+
+`make bench` (seed 42, extra seeds 7 and 2026; rewrites section 2 and applies the gate)
+
+```
+wrote benchmarks/results.json and benchmarks/results.md in 339.4 s
+README.md and REPORT.md tables updated
+all benchmark thresholds met
+```
+
+Two full runs of `make bench` on the same commit gave the same detection, cost, ablation, protocol and
+leakage numbers to every digit in `results.json`; only the latency rows and wall-clock timings differ between
+runs. The service was also
+started with `APP_API_KEY` set and every route exercised over HTTP: scoring with each model, validation
+errors, the replay feed, the alert queue, the ring and account views, `/metrics`, and rejection of a missing
+or wrong key.
 
 ## 7. Known gaps
 
@@ -269,4 +307,4 @@ change slightly from run to run; section 2 has the latest.
   There is no horizontal scaling story.
 * **Latency is measured in process** (and through the in-process ASGI client), not over a network with
   concurrent clients.
-* **No LLM component.** The charter allows an optional one; reason codes are deterministic and none was added.
+* **No LLM component.** Reason codes are deterministic and none was added.

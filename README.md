@@ -1,5 +1,8 @@
 # fraudnet
 
+[![ci](https://github.com/raunitgrey7/fraudnet/actions/workflows/ci.yml/badge.svg)](https://github.com/raunitgrey7/fraudnet/actions/workflows/ci.yml)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Graph machine learning for payment fraud, built around one rule: a feature may only use what the bank knew
 when the payment happened. fraudnet contains a seeded agent-based simulator of a payments network with four
 planted fraud patterns and delayed labels, a point-in-time online feature store that both training and serving
@@ -82,7 +85,7 @@ except `/health`, `/metrics` and the console page.
 ## Measured results
 
 <!-- RESULTS:BEGIN -->
-Seed 42, full profile, generated 2026-10-25T05:49:58Z, commit `ab23bad`, Python 3.13.17, torch 2.14.1, scikit-learn 1.9.1 on arm64 with 2 threads. Total benchmark time 483.8 s.
+Seed 42, full profile, generated 2026-11-27T06:49:31Z, commit `2e2700b`, Python 3.13.17, torch 2.14.1, scikit-learn 1.9.1 on arm64 with 2 threads. Total benchmark time 339.4 s.
 
 441,378 transactions, 5,076 accounts, 8,039 devices, 406 merchants; 2,982 fraud (0.676 percent); 14.0 percent of fraud is never reported; median label delay 9.99 days.
 
@@ -184,16 +187,16 @@ First 30 days (139,394 transactions), cut at day 21.29.
 
 | path | p50 ms | p95 ms | p99 ms | max ms | sequential txn/s |
 |---|---|---|---|---|---|
-| rules | 0.070 | 0.078 | 0.090 | 0.199 | 14131.8 |
-| rules_no_reasons | 0.049 | 0.151 | 0.241 | 0.455 | 15194.7 |
-| gbdt | 1.282 | 1.777 | 3.185 | 76.702 | 695.0 |
-| gbdt_no_reasons | 1.200 | 1.458 | 1.584 | 13.555 | 810.2 |
-| graphsage | 0.066 | 0.072 | 0.083 | 0.165 | 14894.5 |
-| graphsage_no_reasons | 0.044 | 0.049 | 0.061 | 0.150 | 22306.7 |
-| gbdt over HTTP, server side | 1.600 | 1.927 | 2.117 | 2.553 | 611.5 |
-| gbdt over HTTP, client side | 2.148 | 2.517 | 2.773 | 3.229 | 458.0 |
+| rules | 0.068 | 0.074 | 0.086 | 0.131 | 14673.0 |
+| rules_no_reasons | 0.039 | 0.043 | 0.048 | 0.079 | 25654.0 |
+| gbdt | 1.155 | 1.232 | 1.351 | 63.750 | 815.4 |
+| gbdt_no_reasons | 1.113 | 1.264 | 1.423 | 13.041 | 878.4 |
+| graphsage | 0.065 | 0.073 | 0.090 | 0.157 | 15072.2 |
+| graphsage_no_reasons | 0.046 | 0.051 | 0.061 | 0.125 | 21362.7 |
+| gbdt over HTTP, server side | 1.444 | 1.604 | 1.704 | 2.037 | 684.1 |
+| gbdt over HTTP, client side | 1.949 | 2.102 | 2.212 | 2.514 | 509.4 |
 
-2000 test transactions scored one at a time after 50 untimed warm-up transactions; each path covers feature lookup, scoring and reason codes unless marked no_reasons. Online features equal the offline replay features (max absolute difference 0.0). A daily graph refresh over 12,144 nodes takes 0.236 s plus 0.008 s of GNN embedding.
+2000 test transactions scored one at a time after 50 untimed warm-up transactions; each path covers feature lookup, scoring and reason codes unless marked no_reasons. Online features equal the offline replay features (max absolute difference 0.0). A daily graph refresh over 12,144 nodes takes 0.233 s plus 0.007 s of GNN embedding.
 
 ### Seeds
 
@@ -203,6 +206,9 @@ First 30 days (139,394 transactions), cut at day 21.29.
 | 7 | 0.5890 | 0.8178 | 0.9370 | 0.9586 |
 | 2026 | 0.5237 | 0.6525 | 0.9071 | 0.8974 |
 | mean | 0.5319 | 0.7293 | 0.9071 | 0.8588 |
+| standard deviation | 0.0535 | 0.0833 | 0.0299 | 0.1237 |
+
+Test PR-AUC per simulator seed; each seed is a different world with the same configuration.
 <!-- RESULTS:END -->
 
 ## What the numbers say

@@ -14,6 +14,8 @@ Everything runs on a laptop CPU with no API key and no network at runtime. Every
 `make bench` (seed 42) and copied from `benchmarks/results.json` by `python -m fraudnet.bench --update-readme`;
 `tests/test_docs.py` fails if the README and the results file disagree.
 
+![The fraudnet console: alert queue with reason codes, and a device-sharing ring drawn as a graph](docs/console.png)
+
 ## Why
 
 Fraud is a graph problem that is usually evaluated like a tabular one. Synthetic-identity rings look like

@@ -266,10 +266,10 @@ uv run ruff format --check src tests
 
 ```
 uv run pytest -q
-........................................................................ [ 38%]
-........................................................................ [ 76%]
-............................................                             [100%]
-188 passed in 49.46s
+........................................................................ [ 36%]
+........................................................................ [ 73%]
+...................................................                      [100%]
+195 passed in 50.16s
 ```
 
 `make bench` (seed 42, extra seeds 7 and 2026; rewrites section 2 and applies the gate)
@@ -286,6 +286,14 @@ runs. The service was also
 started with `APP_API_KEY` set and every route exercised over HTTP: scoring with each model, validation
 errors, the replay feed, the alert queue, the ring and account views, `/metrics`, and rejection of a missing
 or wrong key.
+
+The console page was then rendered in headless Chrome after replaying 3,000 transactions. That showed a
+defect no HTTP check could: the ring graph's force layout let repulsion outgrow every other force, so all 87
+nodes of the largest ring were pinned to the border of the panel (and nearly all nodes of the smaller ones).
+The layout is now a Fruchterman-Reingold scheme with forces scaled to the panel area per node and a centre
+pull sized for disconnected components; on the same eight rings no node touches the border.
+`tests/test_console_layout.py` runs the JavaScript under Node on five graph shapes and fails on the old
+layout. The screenshot in the README is that render.
 
 ## 7. Known gaps
 

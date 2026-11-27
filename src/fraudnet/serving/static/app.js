@@ -116,33 +116,46 @@ function scoreColour(score) {
   return `hsl(${hue}, 65%, 45%)`;
 }
 
-// A small force layout: springs along edges, repulsion between all pairs, a pull to the centre.
+// Force layout after Fruchterman and Reingold. Forces are scaled by k, a spacing derived from the box
+// area per node, so a ring of five accounts and one of ninety both fill the panel: repulsion k*k/d
+// between all pairs, attraction d*d/k along edges, and a pull to the centre sized so that a cloud of
+// unconnected nodes comes to rest inside the box instead of against its walls (device-sharing clusters
+// are often several small components). The step limit cools to zero, and the start positions are a
+// fixed spiral, so the same ring always draws the same way.
 function layout(nodes, edges, width, height) {
-  const index = new Map(nodes.map((n, i) => [n.id, i]));
-  const pos = nodes.map((_, i) => ({ x: width / 2 + 120 * Math.cos(i * 2.4), y: height / 2 + 120 * Math.sin(i * 2.4), vx: 0, vy: 0 }));
+  const n = nodes.length;
+  const index = new Map(nodes.map((node, i) => [node.id, i]));
   const links = edges.map((e) => [index.get(e.source), index.get(e.target)]).filter(([a, b]) => a !== undefined && b !== undefined);
-  for (let step = 0; step < 320; step++) {
-    const cooling = 1 - step / 320;
-    for (let i = 0; i < pos.length; i++) {
-      for (let j = i + 1; j < pos.length; j++) {
+  const k = 0.4 * Math.sqrt((width * height) / Math.max(n, 1));
+  const restX = 0.42 * width, restY = 0.42 * height;
+  const pullX = (n * k * k) / (restX * restX), pullY = (n * k * k) / (restY * restY);
+  const pos = nodes.map((_, i) => {
+    const radius = Math.sqrt((i + 0.5) / n);
+    return { x: width / 2 + 0.8 * restX * radius * Math.cos(i * 2.399963), y: height / 2 + 0.8 * restY * radius * Math.sin(i * 2.399963) };
+  });
+  const steps = 300;
+  for (let step = 0; step < steps; step++) {
+    const limit = (width / 12) * (1 - step / steps);
+    const move = pos.map((p) => ({ x: (width / 2 - p.x) * pullX, y: (height / 2 - p.y) * pullY }));
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
         const dx = pos[i].x - pos[j].x, dy = pos[i].y - pos[j].y;
-        const d2 = Math.max(dx * dx + dy * dy, 25);
-        const f = 900 / d2;
-        pos[i].vx += f * dx; pos[i].vy += f * dy; pos[j].vx -= f * dx; pos[j].vy -= f * dy;
+        const d = Math.max(Math.hypot(dx, dy), 0.5);
+        const f = (k * k) / (d * d);
+        move[i].x += f * dx; move[i].y += f * dy; move[j].x -= f * dx; move[j].y -= f * dy;
       }
     }
     for (const [a, b] of links) {
       const dx = pos[b].x - pos[a].x, dy = pos[b].y - pos[a].y;
-      const d = Math.sqrt(dx * dx + dy * dy) || 1;
-      const f = (d - 46) * 0.02;
-      pos[a].vx += f * dx / d; pos[a].vy += f * dy / d; pos[b].vx -= f * dx / d; pos[b].vy -= f * dy / d;
+      const f = Math.hypot(dx, dy) / k;
+      move[a].x += f * dx; move[a].y += f * dy; move[b].x -= f * dx; move[b].y -= f * dy;
     }
-    for (const p of pos) {
-      p.vx += (width / 2 - p.x) * 0.004; p.vy += (height / 2 - p.y) * 0.004;
-      p.x += Math.max(-8, Math.min(8, p.vx)) * cooling; p.y += Math.max(-8, Math.min(8, p.vy)) * cooling;
-      p.vx *= 0.5; p.vy *= 0.5;
-      p.x = Math.max(12, Math.min(width - 12, p.x)); p.y = Math.max(12, Math.min(height - 12, p.y));
-    }
+    pos.forEach((p, i) => {
+      const length = Math.max(Math.hypot(move[i].x, move[i].y), 1e-9);
+      const stride = Math.min(length, limit);
+      p.x = Math.max(12, Math.min(width - 12, p.x + (move[i].x / length) * stride));
+      p.y = Math.max(12, Math.min(height - 12, p.y + (move[i].y / length) * stride));
+    });
   }
   return { pos, links };
 }
